@@ -25,6 +25,8 @@
         "vue-template-compiler": "^2.6.11"
     },
     "dependencies": {
-        "save-dev": "0.0.1-security"
+        "font-awesome": "^4.7.0",
+        "save-dev": "0.0.1-security",
+        "watch": "^1.0.2"
     }
 }
