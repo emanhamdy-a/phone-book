@@ -17,7 +17,7 @@ const routes = [
   { path: '/about', component: About }
 ]
 const router = new VueRouter({
-  mode:'history',
+  // mode:'history',
   routes 
 })
 
@@ -27,7 +27,6 @@ const app = new Vue({
     components:{
       Myheader,
       Myfooter,
-      Home
     }
   });
 
