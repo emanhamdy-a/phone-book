@@ -51,11 +51,11 @@ export default {
       showActive : '',
       updateActive : '',
       lists:{},
-      updateList:{},
+      oldUpList:{},
       errors:{},
       loading:false,
       searchQuery:'',
-      temp:''
+      temp:'',
     }
   },
   components:{
@@ -123,17 +123,15 @@ export default {
       }
     },
     openUpdate(key){
-      // this.updateList=this.lists[key];
+      let p3 = JSON.parse(JSON.stringify(this.lists[key]));//disconnected
+      this.oldUpList=p3;
+
       this.$children[2].list=this.lists[key];
       this.$children[2].listnm=key;
       this.updateActive='is-active';
     },
     close(v){
       this.addActive=this.updateActive=this.showActive='';
-      if(v!='undefind'){
-        this.$children[v].list={};
-        this.$children[v].errors={};
-      }
     },
   }
 }

@@ -3,7 +3,9 @@
 	  <div class="modal-background"></div>
 	  <div class="modal-card">
 	    <header class="modal-card-head">
-	      <p class="modal-card-title">Update {{ list.name }}'s Details</p>
+	      <p class="modal-card-title">
+        <i class="has-text-success fa fa-check" v-bind:class="done" style="font-size:30px;" aria-hidden="true"></i>
+        Update {{ list.name }}'s Details</p>
 	      <button class="delete" aria-label="close" @click='close'></button>
 	    </header>
 	    <section class="modal-card-body">
@@ -45,27 +47,36 @@ export default {
   props:['openmodal'],
   data(){
     return{
-      list:{},
-      temp:{},
+      list:{
+      },
       listnm:'',
-      errors:{}
+      errors:{},
+      result:0,
+      done:'is-hidden',
     }
-  },
-  created(){
-    this.temp=this.list;
   },
   methods:{
     close(){
+      this.list={};
+      this.errors={};
       this.$emit('closeRequest',2);
+      if(this.result==0){
+        this.$parent.lists[this.listnm]=this.$parent.oldUpList;
+      }
     },
     update(){
       axios.patch(`/phonebook/${this.list.id}`,this.$data.list)
       .then((response)=>{
-        this.close()
+        this.result=1;
+        this.errors={};
+        this.done='';
+        setTimeout(() => {
+          this.close();
+          this.done='is-hidden';
+        }, 1300);
       }).catch((error) =>{
-        this.$parent.getOne(this.listnm);
-        // this.$parent.temp[this.listnm]=this.temp;
         this.errors = error.response.data.errors
+        this.result=0;
       })
     }
   }

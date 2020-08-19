@@ -1950,6 +1950,8 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: ['openmodal'],
   data: function data() {
@@ -1959,17 +1961,25 @@ __webpack_require__.r(__webpack_exports__);
         email: '',
         phone: ''
       },
-      errors: {}
+      errors: {},
+      result: 0,
+      done: 'is-hidden'
     };
   },
   methods: {
     close: function close() {
+      this.list = {};
+      this.errors = {};
       this.$emit('closeRequest', 0);
     },
     save: function save() {
       var _this = this;
 
       axios.post("/phonebook", this.$data.list).then(function (response) {
+        _this.result = 1;
+        _this.done = '';
+        _this.errors = {};
+
         _this.$parent.lists.push(response.data);
 
         _this.$parent.lists.sort(function (a, b) {
@@ -1982,9 +1992,12 @@ __webpack_require__.r(__webpack_exports__);
 
         setTimeout(function () {
           _this.close();
-        }, 1200);
+
+          _this.done = 'is-hidden';
+        }, 1300);
       })["catch"](function (error) {
-        return _this.errors = error.response.data.errors;
+        _this.result = 0;
+        _this.errors = error.response.data.errors;
       });
     }
   }
@@ -2055,7 +2068,7 @@ var Update = __webpack_require__(/*! ./Update.vue */ "./resources/assets/js/comp
       showActive: '',
       updateActive: '',
       lists: {},
-      updateList: {},
+      oldUpList: {},
       errors: {},
       loading: false,
       searchQuery: '',
@@ -2134,18 +2147,15 @@ var Update = __webpack_require__(/*! ./Update.vue */ "./resources/assets/js/comp
       }
     },
     openUpdate: function openUpdate(key) {
-      // this.updateList=this.lists[key];
+      var p3 = JSON.parse(JSON.stringify(this.lists[key])); //disconnected
+
+      this.oldUpList = p3;
       this.$children[2].list = this.lists[key];
       this.$children[2].listnm = key;
       this.updateActive = 'is-active';
     },
     close: function close(v) {
       this.addActive = this.updateActive = this.showActive = '';
-
-      if (v != 'undefind') {
-        this.$children[v].list = {};
-        this.$children[v].errors = {};
-      }
     }
   }
 });
@@ -2318,33 +2328,44 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: ['openmodal'],
   data: function data() {
     return {
       list: {},
-      temp: {},
       listnm: '',
-      errors: {}
+      errors: {},
+      result: 0,
+      done: 'is-hidden'
     };
-  },
-  created: function created() {
-    this.temp = this.list;
   },
   methods: {
     close: function close() {
+      this.list = {};
+      this.errors = {};
       this.$emit('closeRequest', 2);
+
+      if (this.result == 0) {
+        this.$parent.lists[this.listnm] = this.$parent.oldUpList;
+      }
     },
     update: function update() {
       var _this = this;
 
       axios.patch("/phonebook/".concat(this.list.id), this.$data.list).then(function (response) {
-        _this.close();
+        _this.result = 1;
+        _this.errors = {};
+        _this.done = '';
+        setTimeout(function () {
+          _this.close();
+
+          _this.done = 'is-hidden';
+        }, 1300);
       })["catch"](function (error) {
-        _this.$parent.getOne(_this.listnm); // this.$parent.temp[this.listnm]=this.temp;
-
-
         _this.errors = error.response.data.errors;
+        _this.result = 0;
       });
     }
   }
@@ -30939,7 +30960,15 @@ var render = function() {
     _vm._v(" "),
     _c("div", { staticClass: "modal-card" }, [
       _c("header", { staticClass: "modal-card-head" }, [
-        _c("p", { staticClass: "modal-card-title" }, [_vm._v("Add new")]),
+        _c("p", { staticClass: "modal-card-title" }, [
+          _c("i", {
+            staticClass: "has-text-success fa fa-check",
+            class: _vm.done,
+            staticStyle: { "font-size": "30px" },
+            attrs: { "aria-hidden": "true" }
+          }),
+          _vm._v("\n       Add new")
+        ]),
         _vm._v(" "),
         _c("button", {
           staticClass: "delete",
@@ -31514,7 +31543,13 @@ var render = function() {
     _c("div", { staticClass: "modal-card" }, [
       _c("header", { staticClass: "modal-card-head" }, [
         _c("p", { staticClass: "modal-card-title" }, [
-          _vm._v("Update " + _vm._s(_vm.list.name) + "'s Details")
+          _c("i", {
+            staticClass: "has-text-success fa fa-check",
+            class: _vm.done,
+            staticStyle: { "font-size": "30px" },
+            attrs: { "aria-hidden": "true" }
+          }),
+          _vm._v("\n        Update " + _vm._s(_vm.list.name) + "'s Details")
         ]),
         _vm._v(" "),
         _c("button", {

@@ -3,7 +3,9 @@
   <div class="modal-background"></div>
   <div class="modal-card">
     <header class="modal-card-head">
-      <p class="modal-card-title">Add new</p>
+      <p class="modal-card-title">
+      <i class="has-text-success fa fa-check" v-bind:class="done" style="font-size:30px;" aria-hidden="true"></i>
+       Add new</p>
       <button @click="close" class="delete" aria-label="close"></button>
     </header>
     <section class="modal-card-body">
@@ -51,28 +53,37 @@ export default {
         phone:'',
       },
       errors:{},
+      result:0,
+      done:'is-hidden',
     }
   },
   methods:{
     close(){
+      this.list={};
+      this.errors={};
       this.$emit('closeRequest',0);
     },
     save(){
         axios.post("/phonebook", this.$data.list).then((response)=>{
+          this.result=1;
+          this.done='';
+          this.errors={};
           this.$parent.lists.push(response.data)
 					this.$parent.lists.sort(function(a,b){
 						if (a.name > b.name) {
 							return 1;
 						}else if(a.name < b.name){
-							return -1;
+              return -1;
 						}
 					})
           setTimeout(() => {
-            this.close();
-          }, 1200);
-        }).catch((error)=>
+          this.close();
+          this.done='is-hidden';
+          }, 1300);
+        }).catch((error)=>{
+          this.result=0;
           this.errors=error.response.data.errors
-        );
+        });
     }
   }
 }
